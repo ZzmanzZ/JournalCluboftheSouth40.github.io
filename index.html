@@ -30,10 +30,37 @@
   <p>We meet weekly to discuss peer-reviewed research articles and promote scientific literacy among WashU students.</p>
 
   <h2>Past Articles</h2>
-  <ul class="article-list">
-    <li><a href="https://example.com/article1.pdf" target="_blank">“Title of Article 1” – Journal Name</a></li>
-    <li><a href="https://example.com/article2.pdf" target="_blank">“Title of Article 2” – Journal Name</a></li>
-    <!-- Add more articles here -->
+  <ul class="article-list" id="article-list">
+    <li>Loading articles...</li>
   </ul>
+
+  <script>
+    const repoOwner = "YOUR_GITHUB_USERNAME";
+    const repoName = "YOUR_REPO_NAME";
+
+    fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/`)
+      .then(response => response.json())
+      .then(files => {
+        const list = document.getElementById("article-list");
+        list.innerHTML = ""; // clear loading text
+
+        files
+          .filter(file => file.name.endsWith(".pdf"))
+          .forEach(file => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = file.download_url;
+            link.textContent = file.name;
+            link.target = "_blank";
+            item.appendChild(link);
+            list.appendChild(item);
+          });
+      })
+      .catch(error => {
+        document.getElementById("article-list").innerHTML =
+          "<li>Could not load articles.</li>";
+        console.error("Error fetching files:", error);
+      });
+  </script>
 </body>
 </html>
